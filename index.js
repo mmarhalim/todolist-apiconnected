@@ -7,7 +7,7 @@ $(document).ready(function () {
       success: function (response, textStatus) {
         $('#todo-list').empty();
         response.tasks.forEach(function (task) {
-          $('#todo-list').append('<div class="row"><p class="col-xs-4">' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+          $('#todo-list').append('<div class="row"><p class="col-xs-6">' + 'Task ID: ' + task.id + ' || ' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
         })
       },
       error: function (request, textStatus, errorMessage) {
@@ -94,6 +94,95 @@ $(document).ready(function () {
       markTaskActive($(this).data('id'));
     }
   });
+
+  n = new Date();
+  y = n.getFullYear();
+  m = n.getMonth() + 1;
+  d = n.getDate();
+  document.getElementById("title").innerHTML = "To-do List: " + m + "/" + d + "/" + y;
+
+  var toggleRemaining = function () {
+    $.ajax({
+      type: 'GET',
+      url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=43',
+      dataType: 'json',
+      success: function (response, textStatus) {
+        $('#todo-list').empty();
+        var remainTasks = response.tasks.filter(function (item) {
+          if (item.completed === false) {
+            return true;
+          }
+          return false;
+        });
+        remainTasks.forEach(function (task) {
+          $('#todo-list').append('<div class="row"><p class="col-xs-6">' + 'Task ID: ' + task.id + ' || ' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+        })
+      },
+      error: function (request, textStatus, errorMessage) {
+        console.log(errorMessage);
+      }
+    });
+  }
+
+  var toggleCompleted = function () {
+    $.ajax({
+      type: 'GET',
+      url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=43',
+      dataType: 'json',
+      success: function (response, textStatus) {
+        $('#todo-list').empty();
+        var completedTasks = response.tasks.filter(function (item) {
+          if (item.completed === true) {
+            return true;
+          }
+          return false;
+        });
+        completedTasks.forEach(function (task) {
+          $('#todo-list').append('<div class="row"><p class="col-xs-6">' + 'Task ID: ' + task.id + ' || ' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+        })
+      },
+      error: function (request, textStatus, errorMessage) {
+        console.log(errorMessage);
+      }
+    });
+  }
+
+  var sortbyID = function () {
+    $.ajax({
+      type: 'GET',
+      url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=43',
+      dataType: 'json',
+      success: function (response, textStatus) {
+        $('#todo-list').empty();
+        var sortedTasks = response.tasks.sort(function (a, b) {
+          return a.id - b.id;
+        })
+        sortedTasks.forEach(function (task) {
+          $('#todo-list').append('<div class="row"><p class="col-xs-6">' + 'Task ID: ' + task.id + ' || ' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+        })
+      },
+      error: function (request, textStatus, errorMessage) {
+        console.log(errorMessage);
+      }
+    });
+  }
+
+  $(document).on('click', '#all', function () {
+    getAndDisplayAllTasks();
+  });
+
+  $(document).on('click', '#remaining', function () {
+    toggleRemaining();
+  });
+
+  $(document).on('click', '#completed', function () {
+    toggleCompleted();
+  });
+
+  $(document).on('click', '#sorted', function () {
+    sortbyID();
+  });
+
 
   getAndDisplayAllTasks();
 
